@@ -1,0 +1,59 @@
+services:
+  # 1. Redis Managed Instance
+  - type: redis
+    name: link-collector-redis
+    ipAllowList: [] # internally accessible only
+    plan: free # Change to starter/standard in production
+
+  # 2. FastAPI Web Server
+  - type: web
+    name: link-collector-api
+    env: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: ./apps/api
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: link-collector-redis
+          property: connectionString
+      # Add placeholders for manual configuration in Render Dashboard
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+
+  # 3. Arq Background Worker
+  - type: worker
+    name: link-collector-arq-worker
+    env: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: ./apps/api
+    dockerCommand: arq worker.WorkerSettings
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: link-collector-redis
+          property: connectionString
+      # Add placeholders for manual configuration in Render Dashboard
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false

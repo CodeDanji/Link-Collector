@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+redis>=5.0.0
+arq
+litellm
+trafilatura
+playwright
+firecrawl-py
+python-dotenv
+python-multipart
+httpx
+groq
+yt-dlp
+youtube-transcript-api
+ffmpeg-python
+pydantic-settings
